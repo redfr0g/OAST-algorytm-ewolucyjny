@@ -8,26 +8,26 @@ import xml.etree.ElementTree as ET
 # Link class
 class Link:
     def __init__(self, id, startNode, endNode, numberOfModules, moduleCost, linkModule):
-        self.id = id
-        self.startNode = startNode
-        self.endNode = endNode
-        self.numberOfModules = numberOfModules
-        self.moduleCost = moduleCost
-        self.linkModule = linkModule
+        self.id = int(id)
+        self.startNode = int(startNode)
+        self.endNode = int(endNode)
+        self.numberOfModules = int(numberOfModules)
+        self.moduleCost = int(moduleCost)
+        self.linkModule = int(linkModule)
 
 # Demand class
 class Demand:
     def __init__(self, id, startNode, endNode, volume, paths):
-        self.id = id
-        self.startNode = startNode
-        self.endNode = endNode
-        self.volume = volume
+        self.id = int(id)
+        self.startNode = int(startNode)
+        self.endNode = int(endNode)
+        self.volume = int(volume)
         self.paths = paths
 
 # Path class
 class Path:
     def __init__(self, id, linkIdList):
-        self.id = id
+        self.id = int(id)
         self.linkIdList = linkIdList
 
 
@@ -68,7 +68,7 @@ def parseXML(file):
             pathId = path.attrib['id']
             linkIdList = []
             for linkId in path.findall('linkId'):
-                linkIdList.append(linkId.text)
+                linkIdList.append(int(linkId.text))
 
             newPath = Path(pathId, linkIdList)
             pathList.append(newPath)

@@ -17,8 +17,8 @@ linkId - identyfikator łącza w zapotrzebowaniu
 
 '''
 
-
 import network_parser
+import random
 
 # Parse network file
 linkList, demandList = network_parser.parseXML('net4.xml')
@@ -34,15 +34,21 @@ linkList, demandList = network_parser.parseXML('net4.xml')
 #    for path in demand.paths:
 #        print(path.id, path.linkIdList)
 
-# sumaryczne zapotrzebowanie dla wszystkich laczy
-link_demands = {}
+flow_matrix = {}
+demands = []
 
-for link in linkList:
-    link_demands[link.id] = 0
-    for demand in demandList:
+for demand in demandList:
+    volume = demand.volume
+    while sum(demands) != demand.volume:
+        demands = []
         for path in demand.paths:
-            for id in path.linkIdList:
-                if id == link.id:
-                    link_demands[link.id] += int(demand.volume)
+            allocation = random.randint(0, volume - sum(demands))
+            flow_matrix[demand.id, path.id] = allocation
+            demands.append(allocation)
 
-print(link_demands)
+print("Macierz zapotrzebowan: ")
+for demand in demandList:
+    row = []
+    for path in demand.paths:
+        row.append(flow_matrix[demand.id, path.id])
+    print(row)
