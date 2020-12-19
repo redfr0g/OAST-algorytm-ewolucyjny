@@ -52,26 +52,26 @@ for demand in demandList:
     print(row)
 
 # Tworzenie pustego slownika obciazen dla laczy
-linkOverload = {}
+linkLoad = {}
 for link in linkList:
-    linkOverload[link.id] = 0
+    linkLoad[link.id] = 0
 
 # Obliczenie obciazenia laczy
 for demand in demandList:
     for path in demand.paths:
         for linkId in path.linkIdList:
-            linkOverload[linkId] += flowMatrix[demand.id, path.id]
+            linkLoad[linkId] += flowMatrix[demand.id, path.id]
 
-print("Lista obciazen dla kazdego lacza: {}".format(linkOverload))
-print("Calkowite obciazenie sieci: {}".format(sum(linkOverload.values())))
+print("Lista obciazen dla kazdego lacza: {}".format(linkLoad))
+print("Calkowite obciazenie sieci: {}".format(sum(linkLoad.values())))
 
 # Obliczenie funkcji maksymalnego obciazenia
 for link in linkList:
     if link.id == 1:
         # Dla pierwszego lacza przypisz wartosc bez porownywania
-        loadMaximum = linkOverload[link.id] - link.numberOfModules
+        loadMaximum = linkLoad[link.id] - link.numberOfModules
     else:
         # Dla kolejnych lacz wybierz wartosc maksymalna
-        loadMaximum = max(linkOverload[link.id] - link.numberOfModules, loadMaximum)
+        loadMaximum = max(linkLoad[link.id] - link.numberOfModules, loadMaximum)
 
 print("Maksymalna wartosc obciazenia lacza: {}".format(loadMaximum))
