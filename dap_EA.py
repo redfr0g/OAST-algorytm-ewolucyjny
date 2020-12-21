@@ -20,7 +20,6 @@ from copy import deepcopy
 
 import network_parser
 import random
-from operator import itemgetter
 
 # Parse network file
 linkList, demandList = network_parser.parseXML('net12_1.xml')
@@ -58,7 +57,7 @@ class Chromosome:
             self.geneList.append(gene)
 
         self.setLinkLoad()
-        self.sefLoadMax()
+        self.calculateLoadMax()
 
 
     def setLinkLoad (self):
@@ -74,7 +73,7 @@ class Chromosome:
         #print("Lista obciazen dla kazdego lacza: {}".format(self.linkLoad))
         #print("Calkowite obciazenie sieci: {}".format(sum(self.linkLoad.values())))
 
-    def sefLoadMax(self):
+    def calculateLoadMax(self):
         # Obliczenie funkcji maksymalnego obciazenia
         for link in linkList:
             if link.id == 1:
@@ -95,14 +94,14 @@ class Chromosome:
 """
 
 current_population = []
-population_size = 10
+population_size = 30
 #lista wszystkich populacji (generacji)
 populationList = []
 bestSolutionList = []
 
 #najlepsze chormosomy z populacji, które zostają rodzicami
 parents = []
-number_of_parents = 4
+number_of_parents = 16
 
 #Crossover + Mutacja
 pstwo_crossover = 0.5
@@ -234,7 +233,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
     #Ewaluacja
     for offSpring in offSpringList:
         offSpring.setLinkLoad()
-        offSpring.sefLoadMax()
+        offSpring.calculateLoadMax()
 
     '''
     print("New LoadMax")
@@ -301,9 +300,10 @@ elif impr_count >= max_imprv_count:
     stop_reason = "Przekroczono dopuszczalną liczbę genracji bez poprawy"
 
 print("Kryterium stopu: {}".format(stop_reason))
-print("Najlepsze rozwiązanie minF = {}".format(populationList[-1][0].loadMaximum))
 
+print("\nNajlepsze rozwiązanie minF = {}".format(populationList[-1][0].loadMaximum))
 print("Najlepsze rozwiązania:")
-
+bestLoadMax = []
 for i in range(0, len(bestSolutionList)):
-    print(bestSolutionList[i].loadMaximum)
+   bestLoadMax.append(bestSolutionList[i].loadMaximum)
+print(bestLoadMax)
