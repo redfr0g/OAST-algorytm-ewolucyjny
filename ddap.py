@@ -72,7 +72,7 @@ linkSize = {}
 for link in linkList:
     linkSize[link.id] = 0
 for link in linkList:
-    linkSize[link.id] = math.ceil(linkLoad[linkId]/link.linkModule)
+    linkSize[link.id] = math.ceil(linkLoad[link.id]/link.linkModule)
 
 print("Lista rozmiaru dla kazdego lacza: {}".format(linkSize))
 
