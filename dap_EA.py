@@ -95,13 +95,14 @@ class Chromosome:
 """
 
 current_population = []
-population_size = 6
+population_size = 10
 #lista wszystkich populacji (generacji)
 populationList = []
+bestSolutionList = []
 
 #najlepsze chormosomy z populacji, które zostają rodzicami
 parents = []
-number_of_parents = 2
+number_of_parents = 4
 
 #Crossover + Mutacja
 pstwo_crossover = 0.5
@@ -114,7 +115,6 @@ while i < population_size:
     current_population.append(newChromosome)
     i += 1
 
-populationList.append(deepcopy(current_population))
 
 #2.Wybieramy najlepsze chormosomy z populacji - czyli takie, które mają namniejszą wartość loadMaximum
 
@@ -123,6 +123,9 @@ def funcSortChormosomes(e):
   return e.loadMaximum
 
 current_population.sort(key=funcSortChormosomes)
+
+bestSolutionList.append(current_population[0])
+populationList.append(deepcopy(current_population))
 
 '''
 print("\nBieżąca populacja (chromosomy):")
@@ -262,7 +265,9 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
     # Tworzymy nową generację wybierając najlepszych
     current_population.clear()
     current_population = newChromosomeList[0:population_size]
+    bestSolutionList.append(current_population[0])
     populationList.append(deepcopy(current_population))
+
 
     '''
     print("New Population {}".format(len(populationList)))
@@ -297,3 +302,8 @@ elif impr_count >= max_imprv_count:
 
 print("Kryterium stopu: {}".format(stop_reason))
 print("Najlepsze rozwiązanie minF = {}".format(populationList[-1][0].loadMaximum))
+
+print("Najlepsze rozwiązania:")
+
+for i in range(0, len(bestSolutionList)):
+    print(bestSolutionList[i].loadMaximum)
