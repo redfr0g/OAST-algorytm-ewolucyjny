@@ -1,5 +1,5 @@
 ''''
-OAST - algorytm genetyczny dla problemu DAP
+OAST - algorytm genetyczny dla problemu DDAP
 
 # linkList
 startNode - wezel poczatkowy
@@ -24,7 +24,7 @@ import random
 from operator import itemgetter
 
 # Parse network file
-linkList, demandList = network_parser.parseXML('net4.xml')
+linkList, demandList = network_parser.parseXML('net12_1.xml')
 
 
 class Chromosome:
@@ -110,7 +110,7 @@ bestSolutionList = []
 
 #najlepsze chormosomy z populacji, które zostają rodzicami
 parents = []
-number_of_parents = 30
+number_of_parents = int(population_size/2)
 
 #Crossover + Mutacja
 pstwo_crossover = 0.5
@@ -316,3 +316,37 @@ bestTotalCost = []
 for i in range(0, len(bestSolutionList)):
    bestTotalCost.append(bestSolutionList[i].totalCost)
 print(bestTotalCost)
+
+# Nazwa pliku z wynikami
+filename = "ddap_result.txt"
+
+# Otworz plik w trybie overwrite
+with open(filename, "w") as resultFile:
+
+    # Zapisz ilosc laczy
+    resultFile.write(str(len(bestSolutionList[-1].linkLoad)))
+    resultFile.write("\n\n")
+
+    # Zapisz LinkId + NumberOfSignals + NumberOfFibers
+    for link in linkList:
+        resultFile.write(str(link.id) + " " + str(bestSolutionList[-1].linkLoad[link.id]) + " " + str(link.linkModule))
+        resultFile.write("\n")
+
+    resultFile.write("\n")
+    # Zapisz ilosc obciazen
+    resultFile.write(str(len(bestSolutionList[-1].geneList)))
+    resultFile.write("\n\n")
+
+    for demand in demandList:
+        # Zapisz DemandId + NumberOfPaths
+        resultFile.write(str(demand.id) + " " + str(len(bestSolutionList[-1].geneList[demand.id - 1])))
+        resultFile.write("\n")
+        for path in demand.paths:
+            # Zapisz PathId + PathSignalsCount
+            resultFile.write(str(path.id) + " " + str(bestSolutionList[-1].geneList[demand.id - 1][path.id - 1]))
+            resultFile.write("\n")
+        resultFile.write("\n")
+
+    resultFile.close()
+print()
+print("Wyniki zapisano do pliku {}".format(filename))
