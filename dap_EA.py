@@ -307,3 +307,37 @@ bestLoadMax = []
 for i in range(0, len(bestSolutionList)):
    bestLoadMax.append(bestSolutionList[i].loadMaximum)
 print(bestLoadMax)
+print()
+
+# Nazwa pliku z wynikami
+filename = "dap_result.txt"
+
+# Otworz plik w trybie overwrite
+with open(filename, "w") as resultFile:
+
+    # Zapisz ilosc laczy
+    resultFile.write(str(len(bestSolutionList[-1].linkLoad)))
+    resultFile.write("\n\n")
+
+    # Zapisz LinkId + NumberOfSignals + NumberOfFibers
+    for link in linkList:
+        resultFile.write(str(link.id) + " " + str(bestSolutionList[-1].linkLoad[link.id]) + " " + str(link.linkModule))
+        resultFile.write("\n")
+
+    resultFile.write("\n")
+    # Zapisz ilosc obciazen
+    resultFile.write(str(len(bestSolutionList[-1].geneList)))
+    resultFile.write("\n\n")
+
+    for demand in demandList:
+        # Zapisz DemandId + NumberOfPaths
+        resultFile.write(str(demand.id) + " " + str(len(bestSolutionList[-1].geneList[demand.id - 1])))
+        resultFile.write("\n")
+        for path in demand.paths:
+            # Zapisz PathId + PathSignalsCount
+            resultFile.write(str(path.id) + " " + str(bestSolutionList[-1].geneList[demand.id - 1][path.id - 1]))
+            resultFile.write("\n")
+        resultFile.write("\n")
+
+    resultFile.close()
+print("Wyniki zapisano do pliku {}".format(filename))
