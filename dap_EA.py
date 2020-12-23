@@ -16,6 +16,7 @@ paths - sciezki do zapotrzebowaniu
 linkId - identyfikator łącza w zapotrzebowaniu
 
 '''
+import time
 from copy import deepcopy
 
 import network_parser
@@ -91,17 +92,17 @@ class Chromosome:
 
 """ Zmienne dotyczące algorytmu ewolucyjnego """
 # Rozmiar populacji - liczba musi być podzielna przez 2
-population_size = 32
+population_size = 40
 
 # Prawdopodobieństwo wystąpienia krzyżowania i mutacji
 pstwo_crossover = 0.5
-pstwo_mutation = 0.2
+pstwo_mutation = 0.3
 
 # Kryterium stopu
-max_iteration = 60
-max_generation = 60
+max_iteration = 50
+max_generation = 50
 max_mutation = 800
-max_imprv_count = 20
+max_imprv_count = 15
 
 
 # Lista wszystkich populacji (generacji)
@@ -149,6 +150,7 @@ number_of_mutation = 0
 imprv = False
 impr_count = 0
 
+t_start = time.time()
 while it < max_iteration and len(populationList) < max_generation and number_of_mutation < max_mutation and impr_count < max_imprv_count:
     #  Wybieramy rodziców - 4 pierwsze chromosomy w posortowanej populacji
     parents.clear()
@@ -282,8 +284,10 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
         imprv = False
         impr_count += 1
 
-
+t_end = time.time()
+t_total = t_end - t_start
 print()
+print("Czas optymalizacji: {}".format(t_total))
 print("Liczba iteracji: {}".format(it))
 print("Liczba populacji: {}".format(len(populationList)))
 print("Liczba mutacji: {}".format(number_of_mutation))
