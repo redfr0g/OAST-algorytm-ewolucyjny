@@ -21,7 +21,6 @@ from copy import deepcopy
 
 import network_parser
 import random
-from operator import itemgetter
 
 # Parse network file
 linkList, demandList = network_parser.parseXML('net12_1.xml')
@@ -64,6 +63,7 @@ class Chromosome:
 
 
     def setLinkLoad (self):
+        self.linkLoad = {}
         # Tworzenie pustego slownika obciazen dla laczy
         for link in linkList:
             self.linkLoad[link.id] = 0
@@ -79,6 +79,8 @@ class Chromosome:
     def calculateCost(self):
         # Obliczenie rozmiaru lacza
         # Utworzenie elementow slownika
+        self.totalCost = 0
+        self.linkSize = {}
         for link in linkList:
             self.linkSize[link.id] = 0
         for link in linkList:
@@ -93,67 +95,68 @@ class Chromosome:
         #print("Calkowity koszt laczy: {}".format(self.totalCost))
 
 
-""" Algorytm Ewolucyjny
+""" Zmienne dotyczące algorytmu ewolucyjnego """
+# Rozmiar populacji - liczba musi być podzielna przez 2
+population_size = 32
 
-1. Evaluate the fitness of each individual in the population (time limit, sufficient fitness achieved, etc.)
-2. Select the fittest individuals for reproduction. (Parents)
-3. Breed new individuals through crossover and mutation operations to give birth to offspring.
-4. Replace the least-fit individuals of the population with new individuals.
-
-"""
-
-current_population = []
-population_size = 60
-#lista wszystkich populacji (generacji)
-populationList = []
-bestSolutionList = []
-
-#najlepsze chormosomy z populacji, które zostają rodzicami
-parents = []
-number_of_parents = int(population_size/2)
-
-#Crossover + Mutacja
+# Prawdopodobieństwo wystąpienia krzyżowania i mutacji
 pstwo_crossover = 0.5
 pstwo_mutation = 0.5
 
+# Kryterium stopu
+max_iteration = 80
+max_generation = 80
+max_mutation = 800
+max_imprv_count = 50
+
+
+# Lista wszystkich populacji (generacji)
+populationList = []
+
+# Lista najlepszych rozwiązań
+bestSolutionList = []
+
+current_population = []
+# Lista rodziców - najlepszych chormosomów z populacji
+parents = []
+number_of_parents = int(population_size/2)
+
+
 i = 0
-#1.Generujemy pierwszą populację
+# 1.Generujemy pierwszą populację
 while i < population_size:
     newChromosome = Chromosome(linkList, demandList)
     current_population.append(newChromosome)
     i += 1
 
 
-#2.Wybieramy najlepsze chormosomy z populacji - czyli takie, które mają namniejszą wartość loadMaximum
+# 2.Wybieramy najlepsze chormosomy z populacji - czyli takie, które mają namniejszą wartość totalCost
 
-#najpierw sortujemy chormosomy w populacji od najmiejszej wartości totalCost do największej
+# najpierw sortujemy chormosomy w populacji od najmiejszej wartości totalCost do największej
 def funcSortChormosomes(e):
   return e.totalCost
 
+
 current_population.sort(key=funcSortChormosomes)
 
-bestSolutionList.append(current_population[0])
+bestSolutionList.append(deepcopy(current_population[0]))
 populationList.append(deepcopy(current_population))
 
-
+"""
 print("\nBieżąca populacja (chromosomy):")
 i = 0
 while i < population_size:
     print(current_population[i], " ", current_population[i].totalCost)
     i += 1
 print()
+"""
 
-#Kryterium stopu
-max_iteration = 80
-max_generation = 80
-max_mutation = 800
-max_imprv_count = 80
-
+it = 0
 number_of_mutation = 0
 imprv = False
 impr_count = 0
 
-it = 0
+
 while it < max_iteration and len(populationList) < max_generation and number_of_mutation < max_mutation and impr_count < max_imprv_count:
 #Wybieramy rodziców - 4 pierwsze chromosomy w posortowanej populacji
     parents.clear()
@@ -161,24 +164,21 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
         newParent = deepcopy(current_population[i])
         parents.append(newParent)
 
-    i = 0
     '''
+    i = 0
     print("\nParents (4 najlepsze chormosomy):")
     while i < number_of_parents:
         print(parents[i]," ", parents[i].totalCost)
         i += 1
     '''
 
-    #if random.uniform(0, 1)) < pstwo_crossover:
-
-    #print(len(demandList)/2)
     offSpringList = []
 
     i = 0
     j = 0
-    #Generowanie potomstwa:
-    # Crossover - połowa genów jedengo rodzica i połowa genów drugiego rodzica
-    # Mutacja - zmieniamy obciążenie dwóch losowych ścieżek w losowym żądaniu
+    # Generowanie potomstwa:
+    # Crossover - geny od pierwszego rodzica wybieranie z p-stwem 0.5
+    # Mutacja - zmieniamy obciążenie dwóch losowych ścieżek w losowym żądaniu, występuje z p-stem 0.5
 
     while i < number_of_parents:
         newFlowMatrix = {}
@@ -206,7 +206,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
         print(offSpring.flowMatrix)
         """
 
-        #Mutacja - zmieniamy obciążenie dwóch losowych ścieżek w losowym żądaniu
+        # Mutacja - zmieniamy obciążenie dwóch losowych ścieżek w losowym żądaniu
         if random.uniform(0, 1) > pstwo_mutation:
             number_of_mutation += 1
             # losowe żądanie
@@ -239,7 +239,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
         print(current_population[i].totalCost)
     '''
 
-    #Ewaluacja
+    # Ewaluacja
     for offSpring in offSpringList:
         offSpring.setLinkLoad()
         offSpring.calculateCost()
@@ -250,9 +250,9 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
         print(offSpring.totalCost)
     '''
 
-    #4. Tworzenie nowej populacji - wybieramy najlepszych osobników
+    # 4. Tworzenie nowej populacji - wybieramy najlepszych osobników
 
-    # tworzymy wspólną listę wszytskich chormosomów starych i nowych
+    # Tworzymy wspólną listę wszytskich chormosomów starych i nowych
     newChromosomeList = current_population + offSpringList
 
     """
@@ -273,7 +273,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
     # Tworzymy nową generację wybierając najlepszych
     current_population.clear()
     current_population = newChromosomeList[0:population_size]
-    bestSolutionList.append(current_population[0])
+    bestSolutionList.append(deepcopy(current_population[0]))
     populationList.append(deepcopy(current_population))
 
 
@@ -311,7 +311,7 @@ elif impr_count >= max_imprv_count:
 print("Kryterium stopu: {}".format(stop_reason))
 
 print("\nNajlepsze rozwiązanie minF = {}".format(populationList[-1][0].totalCost))
-print("Najlepsze rozwiązania:")
+print("Wartości funkcji F dla najlepszych rozwiązań:")
 bestTotalCost = []
 for i in range(0, len(bestSolutionList)):
    bestTotalCost.append(bestSolutionList[i].totalCost)
