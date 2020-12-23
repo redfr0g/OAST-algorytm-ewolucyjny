@@ -25,6 +25,9 @@ import random
 # Parse network file
 linkList, demandList = network_parser.parseXML('net12_1.xml')
 
+# Set seed value
+random.seed(1337)
+
 
 class Chromosome:
 
