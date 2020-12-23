@@ -94,12 +94,12 @@ class Chromosome:
 """
 
 """ Zmienne dotyczące algorytmu ewolucyjnego """
-# Rozmiar populacji - liczba musi być podzielna przez 2
+# Rozmiar populacji - liczba musi być podzielna przez 4
 population_size = 40
 
 # Prawdopodobieństwo wystąpienia krzyżowania i mutacji
 pstwo_crossover = 0.5
-pstwo_mutation = 0.3
+pstwo_mutation = 0.2
 
 # Kryterium stopu
 max_iteration = 50

@@ -100,7 +100,7 @@ class Chromosome:
 
 
 """ Zmienne dotyczące algorytmu ewolucyjnego """
-# Rozmiar populacji - liczba musi być podzielna przez 2
+# Rozmiar populacji - liczba musi być podzielna przez 4
 population_size = 28
 
 # Prawdopodobieństwo wystąpienia krzyżowania i mutacji
