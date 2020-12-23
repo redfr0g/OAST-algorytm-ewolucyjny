@@ -23,7 +23,7 @@ import network_parser
 import random
 
 # Parse network file
-linkList, demandList = network_parser.parseXML('net12_1.xml')
+linkList, demandList = network_parser.parseXML('net4.xml')
 
 
 class Chromosome:
@@ -97,17 +97,17 @@ class Chromosome:
 
 """ Zmienne dotyczące algorytmu ewolucyjnego """
 # Rozmiar populacji - liczba musi być podzielna przez 2
-population_size = 32
+population_size = 24
 
 # Prawdopodobieństwo wystąpienia krzyżowania i mutacji
 pstwo_crossover = 0.5
-pstwo_mutation = 0.5
+pstwo_mutation = 0.2
 
 # Kryterium stopu
-max_iteration = 80
-max_generation = 80
-max_mutation = 800
-max_imprv_count = 50
+max_iteration = 20
+max_generation = 20
+max_mutation = 120
+max_imprv_count = 15
 
 
 # Lista wszystkich populacji (generacji)
@@ -184,7 +184,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
         newFlowMatrix = {}
 
         for demand in demandList:
-            if random.uniform(0, 1) > pstwo_crossover:
+            if random.uniform(0, 1) < pstwo_crossover:
                 for path in demand.paths:
                     newFlowMatrix[demand.id, path.id] = parents[i].flowMatrix[demand.id, path.id]
             else:
@@ -207,7 +207,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
         """
 
         # Mutacja - zmieniamy obciążenie dwóch losowych ścieżek w losowym żądaniu
-        if random.uniform(0, 1) > pstwo_mutation:
+        if random.uniform(0, 1) < pstwo_mutation:
             number_of_mutation += 1
             # losowe żądanie
             randomDemandId = random.randint(0, len(demandList)-1) + 1
@@ -311,7 +311,7 @@ elif impr_count >= max_imprv_count:
 print("Kryterium stopu: {}".format(stop_reason))
 
 print("\nNajlepsze rozwiązanie minF = {}".format(populationList[-1][0].totalCost))
-print("Wartości funkcji F dla najlepszych rozwiązań:")
+print("Wartości funkcji F dla najlepszych rozwiązań w kolejnych generacjach:")
 bestTotalCost = []
 for i in range(0, len(bestSolutionList)):
    bestTotalCost.append(bestSolutionList[i].totalCost)
