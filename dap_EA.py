@@ -1,5 +1,5 @@
 '''
-OAST - algorytm genetyczny dla problemu DAP
+OAST - algorytm ewolucyjny dla problemu DAP
 
 # linkList
 startNode - wezel poczatkowy
@@ -84,46 +84,55 @@ class Chromosome:
                 self.loadMaximum = max(self.linkLoad[link.id] - link.numberOfModules*link.linkModule, self.loadMaximum)
 
 
-""" Algorytm Ewolucyjny
-
-1. Evaluate the fitness of each individual in the population (time limit, sufficient fitness achieved, etc.)
-2. Select the fittest individuals for reproduction. (Parents)
-3. Breed new individuals through crossover and mutation operations to give birth to offspring.
-4. Replace the least-fit individuals of the population with new individuals.
-
+"""
+ Algorytm Ewolucyjny
+ 
 """
 
-current_population = []
-population_size = 30
-#lista wszystkich populacji (generacji)
-populationList = []
-bestSolutionList = []
+""" Zmienne dotyczące algorytmu ewolucyjnego """
+# Rozmiar populacji - liczba musi być podzielna przez 2
+population_size = 32
 
-#najlepsze chormosomy z populacji, które zostają rodzicami
-parents = []
-number_of_parents = 16
-
-#Crossover + Mutacja
+# Prawdopodobieństwo wystąpienia krzyżowania i mutacji
 pstwo_crossover = 0.5
 pstwo_mutation = 0.5
 
+# Kryterium stopu
+max_iteration = 80
+max_generation = 80
+max_mutation = 800
+max_imprv_count = 50
+
+
+# Lista wszystkich populacji (generacji)
+populationList = []
+
+# Lista najlepszych rozwiązań
+bestSolutionList = []
+
+current_population = []
+# Lista rodziców - najlepszych chormosomów z populacji
+parents = []
+number_of_parents = int(population_size/2)
+
 i = 0
-#1.Generujemy pierwszą populację
+# 1.Generujemy pierwszą populację
 while i < population_size:
     newChromosome = Chromosome(linkList, demandList)
     current_population.append(newChromosome)
     i += 1
 
 
-#2.Wybieramy najlepsze chormosomy z populacji - czyli takie, które mają namniejszą wartość loadMaximum
+# 2. Wybieramy najlepsze chormosomy z populacji - czyli takie, które mają namniejszą wartość loadMaximum
 
-#najpierw sortujemy chormosomy w populacji po loadMaximum w pierwszej generacji
+# najpierw sortujemy chormosomy w populacji po loadMaximum w pierwszej generacji
 def funcSortChormosomes(e):
   return e.loadMaximum
 
+
 current_population.sort(key=funcSortChormosomes)
 
-bestSolutionList.append(current_population[0])
+bestSolutionList.append(deepcopy(current_population[0]))
 populationList.append(deepcopy(current_population))
 
 '''
@@ -134,42 +143,33 @@ while i < population_size:
     i += 1
 print()
 '''
-#Kryterium stopu
-max_iteration = 150
-max_generation = 150
-max_mutation = 800
-max_imprv_count = 30
 
+it = 0
 number_of_mutation = 0
 imprv = False
 impr_count = 0
 
-it = 0
 while it < max_iteration and len(populationList) < max_generation and number_of_mutation < max_mutation and impr_count < max_imprv_count:
-#Wybieramy rodziców - 4 pierwsze chromosomy w posortowanej populacji
+    #  Wybieramy rodziców - 4 pierwsze chromosomy w posortowanej populacji
     parents.clear()
     for i in range(0, number_of_parents):
         newParent = deepcopy(current_population[i])
         parents.append(newParent)
 
-    i = 0
     '''
+    i = 0
     print("\nParents (4 najlepsze chormosomy):")
     while i < number_of_parents:
         print(parents[i]," ", parents[i].loadMaximum)
         i += 1
     '''
-
-    #if random.uniform(0, 1)) < pstwo_crossover:
-
-    #print(len(demandList)/2)
     offSpringList = []
 
     i = 0
     j = 0
-    #Generowanie potomstwa:
-    # Crossover - połowa genów jedengo rodzica i połowa genów drugiego rodzica
-    # Mutacja - zmieniamy obciążenie dwóch losowych ścieżek w losowym żądaniu
+    # Generowanie potomstwa:
+    # Crossover - geny od pierwszego rodzica są wybierane z p-stwem p
+    # Mutacja - zmieniamy obciążenie dwóch losowych ścieżek w losowym żądaniu, występuje z p-stem p
 
     while i < number_of_parents:
         newFlowMatrix = {}
@@ -216,7 +216,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
             pathLoadValueOne = offSpring.flowMatrix[randomDemandId, pathRandomOne]
             pathLoadValueTwo = offSpring.flowMatrix[randomDemandId, pathRandomTwo]
 
-            #zamiana
+            # zamiana
             offSpring.flowMatrix[randomDemandId, pathRandomOne] = pathLoadValueTwo
             offSpring.flowMatrix[randomDemandId, pathRandomTwo] = pathLoadValueOne
 
@@ -230,7 +230,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
         print(current_population[i].loadMaximum)
     '''
 
-    #Ewaluacja
+    # Ewaluacja
     for offSpring in offSpringList:
         offSpring.setLinkLoad()
         offSpring.calculateLoadMax()
@@ -243,7 +243,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
 
     #4. Tworzenie nowej populacji - wybieramy najlepszych osobników
 
-    # tworzymy wspólną listę wszytskich chormosomów starych i nowych
+    # Tworzymy wspólną listę wszytskich chormosomów starych i nowych
     newChromosomeList = current_population + offSpringList
 
     """
@@ -252,7 +252,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
         print(chromosome.loadMaximum)
     """
 
-    # Sotrujemy listę wszytskich chromosomów
+    # Sortujemy listę wszytskich chromosomów
     newChromosomeList.sort(key=funcSortChormosomes)
 
     """
@@ -264,9 +264,8 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
     # Tworzymy nową generację wybierając najlepszych
     current_population.clear()
     current_population = newChromosomeList[0:population_size]
-    bestSolutionList.append(current_population[0])
+    bestSolutionList.append(deepcopy(current_population[0]))
     populationList.append(deepcopy(current_population))
-
 
     '''
     print("New Population {}".format(len(populationList)))

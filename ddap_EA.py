@@ -1,5 +1,5 @@
 ''''
-OAST - algorytm genetyczny dla problemu DDAP
+OAST - algorytm ewolucyjny dla problemu DDAP
 
 # linkList
 startNode - wezel poczatkowy
@@ -158,7 +158,7 @@ impr_count = 0
 
 
 while it < max_iteration and len(populationList) < max_generation and number_of_mutation < max_mutation and impr_count < max_imprv_count:
-#Wybieramy rodziców - 4 pierwsze chromosomy w posortowanej populacji
+    # Wybieramy rodziców - 4 pierwsze chromosomy w posortowanej populacji
     parents.clear()
     for i in range(0, number_of_parents):
         newParent = deepcopy(current_population[i])
@@ -177,8 +177,8 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
     i = 0
     j = 0
     # Generowanie potomstwa:
-    # Crossover - geny od pierwszego rodzica wybieranie z p-stwem 0.5
-    # Mutacja - zmieniamy obciążenie dwóch losowych ścieżek w losowym żądaniu, występuje z p-stem 0.5
+    # Crossover - geny od pierwszego rodzica są wybieranie z p-stwem p
+    # Mutacja - zmieniamy obciążenie dwóch losowych ścieżek w losowym żądaniu, występuje z p-stem p
 
     while i < number_of_parents:
         newFlowMatrix = {}
@@ -225,7 +225,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
             pathLoadValueOne = offSpring.flowMatrix[randomDemandId, pathRandomOne]
             pathLoadValueTwo = offSpring.flowMatrix[randomDemandId, pathRandomTwo]
 
-            #zamiana
+            # zamiana
             offSpring.flowMatrix[randomDemandId, pathRandomOne] = pathLoadValueTwo
             offSpring.flowMatrix[randomDemandId, pathRandomTwo] = pathLoadValueOne
 
@@ -261,7 +261,7 @@ while it < max_iteration and len(populationList) < max_generation and number_of_
         print(chromosome.totalCost)
     """
 
-    # Sotrujemy listę wszytskich chromosomów
+    # Sortujemy listę wszytskich chromosomów
     newChromosomeList.sort(key=funcSortChormosomes)
 
     """
